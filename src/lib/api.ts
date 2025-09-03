@@ -1,0 +1,9 @@
+import { Event } from "../models/models"
+
+export async function getEvents(): Promise<Event[]> {
+  const res = await fetch("http://localhost:3000/api/events", {
+    cache: "no-store",
+  })
+  if (!res.ok) throw new Error("Failed to fetch events")
+  return res.json()
+}
