@@ -3,7 +3,7 @@ export type ID = string;
 export type User = {
   id: ID;
   displayName: string;
-  avatarUrl?: string;
+  // avatarUrl?: string;
   createdAt: string;
   updatedAt?: string;
 };
@@ -19,13 +19,13 @@ export type Event = {
   durationMins: number;
   location: string;
   notes?: string;
-  capacity?: number;
   createdAt: string;
   updatedAt?: string;
-  goingCount: number;
+  goingCount?: number;
+  liveCount?: number;
 };
 
-export type RsvpStatus = "going" | "maybe";
+export type RsvpStatus = "going";
 
 export type Rsvp = {
   id: ID;
