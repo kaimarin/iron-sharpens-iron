@@ -1,11 +1,13 @@
 import { Event } from "../models/models"
 
 type EventCardProps = {
-  event: Event
+  event: Event;
+  onRsvp: (id: string) => void;
+  onView: (id: string) => void;
   className?: string
 }
 
-export default function EventCard({ event, className = "" }: EventCardProps) {
+export default function EventCard({ event, className = "", onRsvp, onView}: EventCardProps) {
   const dt = new Date(event.startsAt)
   const when = dt.toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" })
   const emoji = event.type === "basketball" ? "🏀" : event.type === "calisthenics" ? "💪" : event.type === "jump" ? "🏋️" : "🗓️"
@@ -20,8 +22,8 @@ export default function EventCard({ event, className = "" }: EventCardProps) {
         Host: {event.hostId} | {when} – {event.location}
       </div>
       <div className="mt-3 flex gap-2">
-        <button className="px-3 py-1.5 rounded-md border hover:bg-gray-50">View</button>
-        <button className="px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">I’m Going</button>
+        <button onClick={() => onView(event.id)} className="px-3 py-1.5 rounded-md border hover:bg-gray-50">View</button>
+        <button onClick={() => onRsvp(event.id)} className="px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">I’m Going</button>
       </div>
     </div>
   )

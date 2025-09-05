@@ -45,7 +45,7 @@ export default function EventList({ events, isLoading = false, onView, onRsvp, c
   return (
     <div className={`grid gap-3 ${className}`}>
       {sorted.map((e) => (
-        <EventCard key={e.id} event={e} />
+        <EventCard key={e.id} event={e} onView={onView} onRsvp={onRsvp} />
       ))}
     </div>
   )

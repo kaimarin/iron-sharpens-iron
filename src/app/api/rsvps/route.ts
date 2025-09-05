@@ -1,13 +1,19 @@
-import { NextResponse } from "next/server"
-import { Rsvp } from "@/models/models"
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/db/client";
+import { rsvps } from "@/db/schema";
 
-const now = new Date().toISOString()
-const data: Rsvp[] = [
-  { id: "r1", eventId: "e1", userId: "u2", status: "going", createdAt: now },
-  // { id: "r2", eventId: "e1", userId: "u3", status: "none", createdAt: now },
-  { id: "r3", eventId: "e2", userId: "u1", status: "going", createdAt: now },
-]
+export async function POST(req: NextRequest) {
+  const { eventId, userId } = await req.json();
+  const id = `rsvp_${Math.random().toString(36).slice(2, 8)}`;
+  const createdAt = new Date().toISOString();
 
-export async function GET() {
-  return NextResponse.json(data)
+  await db.insert(rsvps).values({
+    id,
+    eventId,
+    userId,
+    status: "going",
+    createdAt,
+  });
+
+  return NextResponse.json({ id }, { status: 201 });
 }

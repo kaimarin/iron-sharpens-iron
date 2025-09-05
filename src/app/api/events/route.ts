@@ -1,15 +1,38 @@
-import { NextResponse } from "next/server"
-import { Event } from "@/models/models"
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/db/client";
+import { events } from "@/db/schema";
+import { eq, gte, lt } from "drizzle-orm";
 
-const now = new Date()
-const inHrs = (h: number) => new Date(now.getTime() + h * 3600_000).toISOString()
+export async function GET(req: NextRequest) {
+  const { pathname } = new URL(req.url);
+  const now = new Date().toISOString();
 
-const data: Event[] = [
-  { id: "e1", hostId: "u1", title: "Basketball Run", type: "basketball", startsAt: inHrs(2), durationMins: 90, location: "Jefferson Park", goingCount: 3, createdAt: now.toISOString() },
-  { id: "e2", hostId: "u2", title: "Calisthenics", type: "calisthenics", startsAt: inHrs(14), durationMins: 60, location: "Playground Bars", goingCount: 1, createdAt: now.toISOString() },
-  { id: "e3", hostId: "u3", title: "Jump Training", type: "jump", startsAt: inHrs(30), durationMins: 75, location: "Gym Hall", goingCount: 0, createdAt: now.toISOString() },
-]
+  let rows;
+  if (pathname.endsWith("/past")) {
+    rows = await db.select().from(events).where(lt(events.startsAt, now));
+  } else {
+    rows = await db.select().from(events).where(gte(events.startsAt, now));
+  }
 
-export async function GET() {
-  return NextResponse.json(data)
+  return NextResponse.json(rows);
+}
+
+export async function POST(req: NextRequest) {
+  const data = await req.json();
+  const id = `evt_${Math.random().toString(36).slice(2, 8)}`;
+  const createdAt = new Date().toISOString();
+
+  await db.insert(events).values({
+    id,
+    hostId: data.hostId,
+    title: data.title,
+    type: data.type,
+    startsAt: data.startsAt,
+    durationMins: data.durationMins,
+    location: data.location,
+    notes: data.notes,
+    createdAt,
+  });
+
+  return NextResponse.json({ id }, { status: 201 });
 }
